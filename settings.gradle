@@ -10,4 +10,4 @@ pluginManagement {
 }
 
 // Should match your modid
-rootProject.name = 'toolkit_utils'
+rootProject.name = 'mod_verify'
