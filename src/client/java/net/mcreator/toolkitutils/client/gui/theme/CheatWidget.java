@@ -1,5 +1,6 @@
 package net.mcreator.toolkitutils.client.gui.theme;
 
+import net.mcreator.toolkitutils.client.UIConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -12,7 +13,7 @@ import java.util.function.BooleanSupplier;
 
 public final class CheatWidget extends AbstractWidget {
     private final Runnable action;
-    private final BooleanSupplier isActive; // for toggle-style highlight, may be null
+    private final BooleanSupplier isActive;
 
     public CheatWidget(int x, int y, int w, int h, Component msg, Runnable action) {
         this(x, y, w, h, msg, action, null);
@@ -28,7 +29,9 @@ public final class CheatWidget extends AbstractWidget {
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
         if (this.active && action != null) {
             action.run();
-            AbstractWidget.playButtonClickSound(Minecraft.getInstance().getSoundManager());
+            if (UIConfig.get().clickSound) {
+                AbstractWidget.playButtonClickSound(Minecraft.getInstance().getSoundManager());
+            }
         }
     }
 
@@ -40,20 +43,19 @@ public final class CheatWidget extends AbstractWidget {
         boolean act = isActive != null && isActive.getAsBoolean();
 
         int bg     = !this.active ? Theme.BTN_INACTIVE
-                    : act ? Theme.BTN_BG_ACT
+                    : act ? Theme.active()
                     : hov ? Theme.BTN_BG_HOV
                     : Theme.BTN_BG;
         int border = !this.active ? Theme.BTN_BORDER
-                    : (hov || act) ? Theme.BTN_BORDER_H
+                    : (hov || act) ? Theme.btnBorderH()
                     : Theme.BTN_BORDER;
         int text   = !this.active ? Theme.TEXT_INACTIVE
                     : act ? 0xFF000000
-                    : hov ? Theme.TEXT_ACCENT
+                    : hov ? Theme.textAccent()
                     : Theme.TEXT;
 
         g.fill(x1, y1, x2, y2, bg);
-        // top accent line on hover
-        if (hov && !act) g.fill(x1, y1, x2, y1 + 1, Theme.ACCENT);
+        if (hov && !act) g.fill(x1, y1, x2, y1 + 1, Theme.accent());
         Theme.border(g, x1, y1, x2, y2, border);
 
         Font font = Minecraft.getInstance().font;
@@ -64,14 +66,11 @@ public final class CheatWidget extends AbstractWidget {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput out) {
-        defaultButtonNarrationText(out);
-    }
+    protected void updateWidgetNarration(NarrationElementOutput out) { defaultButtonNarrationText(out); }
 
     public static CheatWidget of(int x, int y, int w, int h, String label, Runnable action) {
         return new CheatWidget(x, y, w, h, Component.literal(label), action);
     }
-
     public static CheatWidget toggle(int x, int y, int w, int h, String label, Runnable action, BooleanSupplier isActive) {
         return new CheatWidget(x, y, w, h, Component.literal(label), action, isActive);
     }

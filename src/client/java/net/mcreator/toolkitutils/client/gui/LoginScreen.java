@@ -2,43 +2,49 @@ package net.mcreator.toolkitutils.client.gui;
 
 import net.mcreator.toolkitutils.client.ClientInit;
 import net.mcreator.toolkitutils.client.ToolkitConfig;
-import net.mcreator.toolkitutils.client.gui.theme.CheatBaseScreen;
-import net.mcreator.toolkitutils.client.gui.theme.CheatWidget;
-import net.mcreator.toolkitutils.client.gui.theme.Theme;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-public final class LoginScreen extends CheatBaseScreen {
+/**
+ * Disguised as a vanilla-styled "mod integrity check" dialog. Looks like the
+ * kind of boring prompt every modded MC install throws up at some point — a
+ * shoulder-surfer glances at it and dismisses. Uses vanilla widget styling
+ * deliberately (no cheat theme) to blend in.
+ */
+public final class LoginScreen extends Screen {
     private EditBox idBox, codeBox;
     private boolean failed;
+    private int attempts;
 
-    public LoginScreen() { super("auth"); }
+    public LoginScreen() { super(Component.literal("Mod Integrity Check")); }
 
-    @Override protected int panelWidth()  { return 260; }
-    @Override protected int panelHeight() { return 170; }
+    @Override public boolean isPauseScreen() { return false; }
 
     @Override
     protected void init() {
-        int w = panelWidth() - 40, h = 18, gap = 8;
-        int x = panelX() + 20;
-        int y = contentY() + 12;
+        int w = 220, h = 20, gap = 8;
+        int x = (width - w) / 2;
+        int y = height / 2 - 60;
 
-        addRenderableWidget(labelledEdit(x, y, w, h, "power id", false, e -> idBox = e));
-        addRenderableWidget(labelledEdit(x, y + (h + gap) + 10, w, h, "power code", true, e -> codeBox = e));
+        idBox = new EditBox(font, x, y, w, h, Component.literal("session id"));
+        idBox.setHint(Component.literal("session id"));
+        idBox.setMaxLength(64);
+        addRenderableWidget(idBox);
 
-        addRenderableWidget(CheatWidget.of(x, y + 2 * (h + gap) + 28, w, h, "AUTHENTICATE", this::check));
-        addRenderableWidget(CheatWidget.of(x, y + 3 * (h + gap) + 30, w, h, "CANCEL", this::onClose));
+        codeBox = new EditBox(font, x, y + h + gap, w, h, Component.literal("verification hash"));
+        codeBox.setHint(Component.literal("verification hash"));
+        codeBox.setMaxLength(128);
+        addRenderableWidget(codeBox);
+
+        addRenderableWidget(Button.builder(Component.literal("Verify"), b -> check())
+                .bounds(x, y + 2 * (h + gap), w / 2 - 4, h).build());
+        addRenderableWidget(Button.builder(Component.literal("Dismiss"), b -> onClose())
+                .bounds(x + w / 2 + 4, y + 2 * (h + gap), w / 2 - 4, h).build());
 
         setInitialFocus(idBox);
-    }
-
-    private EditBox labelledEdit(int x, int y, int w, int h, String hint, boolean secret, java.util.function.Consumer<EditBox> capture) {
-        EditBox e = new EditBox(font, x, y, w, h, Component.literal(hint));
-        e.setHint(Component.literal(hint));
-        if (secret) e.setMaxLength(128);
-        capture.accept(e);
-        return e;
     }
 
     private void check() {
@@ -47,6 +53,7 @@ public final class LoginScreen extends CheatBaseScreen {
             minecraft.gui.setScreen(new CheatMenuScreen());
         } else {
             failed = true;
+            attempts++;
             codeBox.setValue("");
         }
     }
@@ -54,11 +61,22 @@ public final class LoginScreen extends CheatBaseScreen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float dt) {
         super.extractRenderState(g, mx, my, dt);
-        int x = panelX() + 20;
-        int y = contentY();
-        g.text(font, Component.literal("> ACCESS REQUIRED"), x, y, Theme.TEXT_ACCENT, false);
+        String title = "Mod Integrity Check";
+        int tw = font.width(title);
+        g.text(font, Component.literal(title), (width - tw) / 2, height / 2 - 100, 0xFFBFBFBF, true);
+
+        String line1 = "One or more installed mods require a signed session";
+        String line2 = "verification. Enter the credentials provided by your";
+        String line3 = "server or mod administrator.";
+        int y = height / 2 - 84;
+        g.text(font, Component.literal(line1), (width - font.width(line1)) / 2, y, 0xFF808080, false);
+        g.text(font, Component.literal(line2), (width - font.width(line2)) / 2, y + 10, 0xFF808080, false);
+        g.text(font, Component.literal(line3), (width - font.width(line3)) / 2, y + 20, 0xFF808080, false);
+
         if (failed) {
-            g.text(font, Component.literal("invalid credentials"), x, panelY() + panelHeight() - 14, 0xFFFF4466, false);
+            String msg = "verification failed (" + attempts + ")";
+            int mw = font.width(msg);
+            g.text(font, Component.literal(msg), (width - mw) / 2, height / 2 + 24, 0xFF9E4444, false);
         }
     }
 }

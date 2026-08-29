@@ -70,7 +70,7 @@ public final class CountPromptScreen extends CheatBaseScreen {
         super.extractRenderState(g, mx, my, dt);
         int x = panelX() + 20;
         int y = contentY();
-        g.text(font, Component.literal("> " + targetLabel.toUpperCase()), x, y, Theme.TEXT_ACCENT, false);
+        g.text(font, Component.literal("> " + targetLabel.toUpperCase()), x, y, Theme.textAccent(), false);
         int bh = 18;
         g.text(font, Component.literal("items"),  x, y + bh + 15, Theme.TEXT_DIM, false);
         int y2 = y + 3 * bh + 30;
