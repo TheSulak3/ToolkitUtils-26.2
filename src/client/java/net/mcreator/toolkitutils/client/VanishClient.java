@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class VanishClient {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/net");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/net");
     private static boolean hidden;
 
     private VanishClient() {}

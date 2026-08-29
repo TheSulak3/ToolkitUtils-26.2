@@ -21,12 +21,20 @@ public final class IpRevealScreen extends CheatBaseScreen {
 
     @Override
     protected void init() {
-        int bh = 18, rowW = panelWidth() - 20;
+        int bh = 18, rowW = panelWidth() - 20, gap = 4;
         int x = panelX() + 10;
-        addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - bh - 8, rowW, bh, "BACK",
+        int third = (rowW - 2 * gap) / 3;
+        addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - bh - 8, third, bh, "BACK",
                 () -> minecraft.gui.setScreen(new CheatMenuScreen())));
-        addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - 2 * bh - 12, rowW, bh, "REFRESH",
+        addRenderableWidget(CheatWidget.of(x + third + gap, panelY() + panelHeight() - bh - 8, third, bh, "REFRESH",
                 () -> SpyClient.queryIp(target)));
+        addRenderableWidget(CheatWidget.of(x + 2 * (third + gap), panelY() + panelHeight() - bh - 8, third, bh, "COPY",
+                () -> {
+                    var r = SpyClient.lastIp;
+                    if (r != null && r.targetName().equals(target)) {
+                        net.minecraft.client.Minecraft.getInstance().keyboardHandler.setClipboard(r.ip() + ":" + r.port());
+                    }
+                }));
     }
 
     @Override

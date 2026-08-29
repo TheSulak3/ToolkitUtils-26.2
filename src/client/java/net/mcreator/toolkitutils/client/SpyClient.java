@@ -10,7 +10,7 @@ import java.util.List;
 
 /** Client-side outbound sender + latest-response cache for the recon payloads. */
 public final class SpyClient {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/spy");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/spy");
     private SpyClient() {}
 
     // Latest results — screens poll these each frame.

@@ -16,12 +16,30 @@ public final class ServerInfoScreen extends CheatBaseScreen {
 
     @Override
     protected void init() {
-        int bh = 18, rowW = panelWidth() - 20;
+        int bh = 18, rowW = panelWidth() - 20, gap = 4;
         int x = panelX() + 10;
-        addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - bh - 8, rowW, bh, "BACK",
+        int half = (rowW - gap) / 2;
+        addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - bh - 8, half, bh, "BACK",
                 () -> minecraft.gui.setScreen(new CheatMenuScreen())));
+        addRenderableWidget(CheatWidget.of(x + half + gap, panelY() + panelHeight() - bh - 8, half, bh, "COPY ALL",
+                this::copyAll));
         addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - 2 * bh - 12, rowW, bh, "REFRESH",
                 () -> SpyClient.queryIp("")));
+    }
+
+    private void copyAll() {
+        Minecraft mc = Minecraft.getInstance();
+        StringBuilder sb = new StringBuilder();
+        sb.append("server_addr=").append(addr(mc)).append('\n');
+        sb.append("brand=").append(brand(mc)).append('\n');
+        sb.append("protocol=").append(protocol(mc)).append('\n');
+        sb.append("world=").append(worldName(mc)).append('\n');
+        sb.append("gametype=").append(gm(mc)).append('\n');
+        sb.append("players=").append(playerCount(mc)).append('\n');
+        sb.append("ping=").append(ping(mc)).append('\n');
+        sb.append("uuid=").append(uuid(mc)).append('\n');
+        sb.append("bind=").append(bindIp()).append('\n');
+        mc.keyboardHandler.setClipboard(sb.toString());
     }
 
     @Override

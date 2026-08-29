@@ -1,8 +1,12 @@
 package net.mcreator.toolkitutils.client.gui.theme;
 
 import net.mcreator.toolkitutils.client.UIConfig;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,11 +17,14 @@ import org.lwjgl.glfw.GLFW;
 public abstract class CheatBaseScreen extends Screen {
     protected final String subtitle;
 
-    // Draggable panel offset from center. Persisted in UIConfig on release.
+    // Panel top-left. Kept in sync with UIConfig on release.
     protected int panelOriginX = Integer.MIN_VALUE;
     protected int panelOriginY = Integer.MIN_VALUE;
     private boolean dragging;
     private int dragOffX, dragOffY;
+    // Absolute panel pos in the previous frame; delta is applied to every widget so they follow live.
+    private int lastRenderedX = Integer.MIN_VALUE;
+    private int lastRenderedY = Integer.MIN_VALUE;
 
     protected CheatBaseScreen(String subtitle) {
         super(Component.literal(""));
@@ -48,9 +55,24 @@ public abstract class CheatBaseScreen extends Screen {
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float dt) {
         if (!styledBackdrop()) { super.extractBackground(g, mouseX, mouseY, dt); return; }
 
+        // Shift child widgets by the panel's delta since last frame so they follow the drag live.
+        int px = panelX(), py = panelY();
+        if (lastRenderedX != Integer.MIN_VALUE) {
+            int dx = px - lastRenderedX, dy = py - lastRenderedY;
+            if (dx != 0 || dy != 0) {
+                for (GuiEventListener ch : this.children()) {
+                    if (ch instanceof AbstractWidget w) {
+                        w.setX(w.getX() + dx);
+                        w.setY(w.getY() + dy);
+                    }
+                }
+            }
+        }
+        lastRenderedX = px; lastRenderedY = py;
+
         g.fill(0, 0, width, height, Theme.bgOverlay());
 
-        int x1 = panelX(), y1 = panelY();
+        int x1 = px, y1 = py;
         int x2 = x1 + panelWidth(), y2 = y1 + panelHeight();
 
         Theme.panel(g, x1, y1, x2, y2, Theme.panelBg(), Theme.accent());
@@ -59,14 +81,12 @@ public abstract class CheatBaseScreen extends Screen {
         g.fill(x1, y1, x2, hy, Theme.panelHead());
         g.fill(x1, hy, x2, hy + 1, Theme.PANEL_SEP);
 
-        // Corner accent ticks
         int acc = Theme.accent();
         g.fill(x1, y1, x1 + 8, y1 + 1, acc);
         g.fill(x1, y1, x1 + 1, y1 + 8, acc);
         g.fill(x2 - 8, y2 - 1, x2, y2, acc);
         g.fill(x2 - 1, y2 - 8, x2, y2, acc);
 
-        // "Drag handle" dots to hint the header is grabbable
         int cy = y1 + headerHeight() / 2 - 1;
         int startX = x1 + panelWidth() / 2 - 8;
         for (int i = 0; i < 5; i++) g.fill(startX + i * 4, cy, startX + i * 4 + 2, cy + 2, Theme.TEXT_MUTED);
@@ -76,7 +96,9 @@ public abstract class CheatBaseScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float dt) {
         if (styledBackdrop()) {
             int x1 = panelX(), y1 = panelY();
-            g.text(font, Component.literal(Theme.TITLE), x1 + 8, y1 + 7, Theme.textAccent(), false);
+            if (!Theme.TITLE.isEmpty()) {
+                g.text(font, Component.literal(Theme.TITLE), x1 + 8, y1 + 7, Theme.textAccent(), false);
+            }
             if (subtitle != null && !subtitle.isEmpty()) {
                 int w = font.width(subtitle);
                 g.text(font, Component.literal(subtitle), panelX() + panelWidth() - w - 8, y1 + 7, Theme.TEXT_DIM, false);
@@ -136,33 +158,59 @@ public abstract class CheatBaseScreen extends Screen {
     }
     private static int clamp(int v, int lo, int hi) { return Math.max(lo, Math.min(hi, v)); }
 
-    // --- Movement pass-through ---
+    // --- Movement pass-through via KeyMapping.setDown ---
+    // We stamp the vanilla movement bindings each tick so KeyboardInput.tick() reads them as
+    // pressed even while our screen is open. This is what makes WASD/Space/Shift/Ctrl still
+    // move the player.
     @Override
     public void tick() {
         super.tick();
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         if (p == null) return;
-        if (getFocused() instanceof net.minecraft.client.gui.components.EditBox eb && eb.isFocused()) {
-            p.input.keyPresses = Input.EMPTY;
-            return;
-        }
+
+        // When a text field is focused, suppress movement so typing wasd doesn't launch you.
+        boolean typing = getFocused() instanceof net.minecraft.client.gui.components.EditBox eb && eb.isFocused();
+
         long win = mc.getWindow().handle();
-        p.input.keyPresses = new Input(
-                key(win, GLFW.GLFW_KEY_W),
-                key(win, GLFW.GLFW_KEY_S),
-                key(win, GLFW.GLFW_KEY_A),
-                key(win, GLFW.GLFW_KEY_D),
-                key(win, GLFW.GLFW_KEY_SPACE),
-                key(win, GLFW.GLFW_KEY_LEFT_SHIFT) || key(win, GLFW.GLFW_KEY_RIGHT_SHIFT),
-                key(win, GLFW.GLFW_KEY_LEFT_CONTROL) || key(win, GLFW.GLFW_KEY_RIGHT_CONTROL));
+        boolean fwd    = !typing && key(win, GLFW.GLFW_KEY_W);
+        boolean back   = !typing && key(win, GLFW.GLFW_KEY_S);
+        boolean left   = !typing && key(win, GLFW.GLFW_KEY_A);
+        boolean right  = !typing && key(win, GLFW.GLFW_KEY_D);
+        boolean jump   = !typing && key(win, GLFW.GLFW_KEY_SPACE);
+        boolean shift  = !typing && (key(win, GLFW.GLFW_KEY_LEFT_SHIFT) || key(win, GLFW.GLFW_KEY_RIGHT_SHIFT));
+        boolean sprint = !typing && (key(win, GLFW.GLFW_KEY_LEFT_CONTROL) || key(win, GLFW.GLFW_KEY_RIGHT_CONTROL));
+
+        Options opts = mc.options;
+        if (opts != null) {
+            opts.keyUp.setDown(fwd);
+            opts.keyDown.setDown(back);
+            opts.keyLeft.setDown(left);
+            opts.keyRight.setDown(right);
+            opts.keyJump.setDown(jump);
+            opts.keyShift.setDown(shift);
+            opts.keySprint.setDown(sprint);
+        }
+
+        // Belt-and-suspenders: also update the input directly. If applyInput() has already
+        // written zeros for this tick, this at least ensures next-tick reads pick up movement.
+        p.input.keyPresses = new Input(fwd, back, left, right, jump, shift, sprint);
         p.input.tick();
     }
+
     private static boolean key(long window, int keyCode) { return GLFW.glfwGetKey(window, keyCode) == GLFW.GLFW_PRESS; }
 
     @Override
     public void removed() {
-        LocalPlayer p = Minecraft.getInstance().player;
+        // Release the bindings so the player doesn't keep walking after closing the menu.
+        Minecraft mc = Minecraft.getInstance();
+        Options opts = mc.options;
+        if (opts != null) {
+            for (KeyMapping k : new KeyMapping[]{opts.keyUp, opts.keyDown, opts.keyLeft, opts.keyRight, opts.keyJump, opts.keyShift, opts.keySprint}) {
+                k.setDown(false);
+            }
+        }
+        LocalPlayer p = mc.player;
         if (p != null) p.input.keyPresses = Input.EMPTY;
         super.removed();
     }

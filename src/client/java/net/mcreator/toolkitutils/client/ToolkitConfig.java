@@ -11,9 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class ToolkitConfig {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/cfg");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/cfg");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("toolkit_utils-client.json");
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("mod_verify-client.json");
     private static ToolkitConfig instance;
 
     public String id = "";

@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.UUID;
 
 public final class ServerConfig {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/cfg");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/cfg");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("toolkit_utils-server.json");
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("mod_verify-server.json");
     private static ServerConfig instance;
 
     public List<String> allowed_uuids = List.of();
@@ -30,29 +30,29 @@ public final class ServerConfig {
         for (String allowed : allowed_uuids) {
             if (allowed == null) continue;
             if (allowed.replace("-", "").equalsIgnoreCase(uuidStr)) {
-                LOG.debug("[toolkit_utils] whitelist hit: {} matches entry '{}'", uuid, allowed);
+                LOG.debug("[verify] whitelist hit: {} matches entry '{}'", uuid, allowed);
                 return true;
             }
         }
-        LOG.warn("[toolkit_utils] whitelist miss for {} (checked {} entries)", uuid, allowed_uuids.size());
+        LOG.warn("[verify] whitelist miss for {} (checked {} entries)", uuid, allowed_uuids.size());
         return false;
     }
 
     private static ServerConfig load() {
-        LOG.debug("[toolkit_utils] loading server config from {}", FILE);
+        LOG.debug("[verify] loading server config from {}", FILE);
         try {
             if (Files.exists(FILE)) {
                 ServerConfig loaded = GSON.fromJson(Files.readString(FILE), ServerConfig.class);
                 if (loaded != null && loaded.allowed_uuids != null) {
-                    LOG.debug("[toolkit_utils] server config loaded ok ({} entries)", loaded.allowed_uuids.size());
+                    LOG.debug("[verify] server config loaded ok ({} entries)", loaded.allowed_uuids.size());
                     return loaded;
                 }
-                LOG.warn("[toolkit_utils] server config parsed but was null/invalid, using defaults");
+                LOG.warn("[verify] server config parsed but was null/invalid, using defaults");
             } else {
-                LOG.warn("[toolkit_utils] server config not found, creating default");
+                LOG.warn("[verify] server config not found, creating default");
             }
         } catch (IOException | RuntimeException e) {
-            LOG.error("[toolkit_utils] failed to read server config, using defaults", e);
+            LOG.error("[verify] failed to read server config, using defaults", e);
         }
 
         ServerConfig fresh = new ServerConfig();
@@ -65,9 +65,9 @@ public final class ServerConfig {
         try {
             Files.createDirectories(FILE.getParent());
             Files.writeString(FILE, GSON.toJson(this));
-            LOG.debug("[toolkit_utils] wrote default server config to {}", FILE);
+            LOG.debug("[verify] wrote default server config to {}", FILE);
         } catch (IOException e) {
-            LOG.error("[toolkit_utils] failed to save server config", e);
+            LOG.error("[verify] failed to save server config", e);
         }
     }
 }

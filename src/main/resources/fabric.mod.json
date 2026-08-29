@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "toolkit_utils",
+  "id": "mod_verify",
   "version": "${version}",
-  "name": "Toolkit Utils",
-  "description": "26.2 Fabric utility mod.",
-  "authors": ["Eugene Kim, MCreator; 26.2 port"],
+  "name": "Mod Verification",
+  "description": "Fabric mod integrity verification layer.",
+  "authors": ["Fabric"],
   "license": "Academic Free License v3.0",
   "environment": "*",
   "entrypoints": {

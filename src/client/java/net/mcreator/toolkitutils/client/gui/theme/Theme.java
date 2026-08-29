@@ -21,7 +21,7 @@ public final class Theme {
     public static final int TAB_BG        = 0xFF14141C;
     public static final int TAB_BG_ACTIVE = 0xFF1E1E2A;
 
-    public static final String TITLE = "TOOLKIT UTILS";
+    public static final String TITLE = "";
 
     // Dynamic colors driven by UIConfig
     public static int bgOverlay()   { return UIConfig.get().bgOverlayArgb(); }

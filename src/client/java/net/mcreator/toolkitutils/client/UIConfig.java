@@ -11,9 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class UIConfig {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/ui");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/ui");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("toolkit_utils-ui.json");
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("mod_verify-ui.json");
     private static UIConfig instance;
 
     // 0..100

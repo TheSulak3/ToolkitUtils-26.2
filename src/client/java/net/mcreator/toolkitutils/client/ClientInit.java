@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class ClientInit implements ClientModInitializer {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/client");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/client");
     public static boolean AUTHENTICATED = false;
     private static boolean comboWasDown;
 

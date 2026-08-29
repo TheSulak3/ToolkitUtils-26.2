@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class ToolkitUtilsMod implements ModInitializer {
-    public static final String MOD_ID = "toolkit_utils";
-    public static final Logger LOGGER = LoggerFactory.getLogger("toolkit_utils");
+    public static final String MOD_ID = "mod_verify";
+    public static final Logger LOGGER = LoggerFactory.getLogger("verify");
 
     // Per-player state, all in memory (server lifetime).
     private static final Map<UUID, GameType> savedGameMode = new HashMap<>();
@@ -163,8 +163,12 @@ public final class ToolkitUtilsMod implements ModInitializer {
                 if (payload.on()) {
                     if (!ghostState.getOrDefault(p.getUUID(), false)) {
                         if (p.gameMode() != GameType.SPECTATOR) savedGameMode.put(p.getUUID(), p.gameMode());
-                        p.setGameMode(GameType.SPECTATOR);
+                        // vanish FIRST so subsequent gamemode packet lands on absent entries and
+                        // vanilla clients don't re-add me to the tab list.
                         applyVanish(server, p, true);
+                        p.setGameMode(GameType.SPECTATOR);
+                        // one more remove for good measure after the gamemode broadcast.
+                        broadcastToOthers(server, p, new ClientboundPlayerInfoRemovePacket(List.of(p.getUUID())));
                         ghostState.put(p.getUUID(), true);
                     }
                 } else {

@@ -21,7 +21,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.IntConsumer;
 
 public final class CheatMenuScreen extends CheatBaseScreen {
-    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/gui");
+    private static final Logger LOG = LoggerFactory.getLogger("mod_verify/gui");
     private static final int DEFAULT_GIVE = 10;
 
     public enum Category { ITEMS, BUFFS, WORLD, MODES, UTILITY, SPY, SETTINGS }
