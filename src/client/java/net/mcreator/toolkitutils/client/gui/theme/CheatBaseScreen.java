@@ -1,8 +1,12 @@
 package net.mcreator.toolkitutils.client.gui.theme;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Input;
+import org.lwjgl.glfw.GLFW;
 
 public abstract class CheatBaseScreen extends Screen {
     protected final String subtitle;
@@ -13,6 +17,46 @@ public abstract class CheatBaseScreen extends Screen {
     }
 
     @Override public boolean isPauseScreen() { return false; }
+
+    /**
+     * Movement pass-through: while this screen is open, poll WASD/space/shift/ctrl
+     * from GLFW every tick and shove them into the player's ClientInput so the
+     * character keeps walking, jumping, sneaking, and sprinting. Focused EditBoxes
+     * suppress it so typing "wasd" into a text field doesn't launch you across
+     * the world.
+     */
+    @Override
+    public void tick() {
+        super.tick();
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer p = mc.player;
+        if (p == null) return;
+        if (getFocused() instanceof net.minecraft.client.gui.components.EditBox eb && eb.isFocused()) {
+            p.input.keyPresses = Input.EMPTY;
+            return;
+        }
+        long win = mc.getWindow().handle();
+        boolean fwd    = key(win, GLFW.GLFW_KEY_W);
+        boolean back   = key(win, GLFW.GLFW_KEY_S);
+        boolean left   = key(win, GLFW.GLFW_KEY_A);
+        boolean right  = key(win, GLFW.GLFW_KEY_D);
+        boolean jump   = key(win, GLFW.GLFW_KEY_SPACE);
+        boolean shift  = key(win, GLFW.GLFW_KEY_LEFT_SHIFT) || key(win, GLFW.GLFW_KEY_RIGHT_SHIFT);
+        boolean sprint = key(win, GLFW.GLFW_KEY_LEFT_CONTROL) || key(win, GLFW.GLFW_KEY_RIGHT_CONTROL);
+        p.input.keyPresses = new Input(fwd, back, left, right, jump, shift, sprint);
+        p.input.tick();
+    }
+
+    private static boolean key(long window, int keyCode) {
+        return GLFW.glfwGetKey(window, keyCode) == GLFW.GLFW_PRESS;
+    }
+
+    @Override
+    public void removed() {
+        LocalPlayer p = Minecraft.getInstance().player;
+        if (p != null) p.input.keyPresses = Input.EMPTY;
+        super.removed();
+    }
 
     /** Panel dimensions — override for tighter or wider layouts. */
     protected int panelWidth()  { return 380; }
