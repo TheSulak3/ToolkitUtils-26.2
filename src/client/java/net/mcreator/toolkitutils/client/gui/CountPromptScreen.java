@@ -1,51 +1,56 @@
 package net.mcreator.toolkitutils.client.gui;
 
-import net.minecraft.client.gui.components.Button;
+import net.mcreator.toolkitutils.client.gui.theme.CheatBaseScreen;
+import net.mcreator.toolkitutils.client.gui.theme.CheatWidget;
+import net.mcreator.toolkitutils.client.gui.theme.Theme;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.IntConsumer;
 
-public final class CountPromptScreen extends Screen {
+public final class CountPromptScreen extends CheatBaseScreen {
+    private final String targetLabel;
     private final IntConsumer onSubmit;
     private final Screen returnTo;
     private EditBox items, stacks;
 
     public CountPromptScreen(String label, IntConsumer onSubmit, Screen returnTo) {
-        super(Component.literal(label));
+        super("give: " + label);
+        this.targetLabel = label;
         this.onSubmit = onSubmit;
         this.returnTo = returnTo;
     }
 
-    @Override public boolean isPauseScreen() { return false; }
+    @Override protected int panelWidth()  { return 260; }
+    @Override protected int panelHeight() { return 170; }
 
     @Override
     protected void init() {
-        int w = 180, bh = 18, gap = 6;
+        int bh = 18, gap = 8;
         int fw = 90;
-        int x = (width - w) / 2;
-        int y = (height - (5 * bh + 4 * gap)) / 2;
+        int rowW = panelWidth() - 40;
+        int x = panelX() + 20;
+        int y = contentY() + 10;
 
-        items = new EditBox(font, x + w - fw, y + bh + gap, fw, bh, Component.literal("items"));
-        items.setHint(Component.literal("64"));
-        items.setValue("64");
+        items = new EditBox(font, x + rowW - fw, y, fw, bh, Component.literal("items"));
+        items.setHint(Component.literal("1"));
+        items.setValue("1");
         addRenderableWidget(items);
-        addRenderableWidget(Button.builder(Component.literal("Give items"),
-                b -> submit(parse(items.getValue(), 64)))
-                .bounds(x, y + 2 * (bh + gap), w, bh).build());
+        addRenderableWidget(CheatWidget.of(x, y + bh + 4, rowW, bh, "GIVE ITEMS",
+                () -> submit(parse(items.getValue(), 1))));
 
-        stacks = new EditBox(font, x + w - fw, y + 3 * (bh + gap), fw, bh, Component.literal("stacks"));
+        int y2 = y + 2 * (bh + gap) + 6;
+        stacks = new EditBox(font, x + rowW - fw, y2, fw, bh, Component.literal("stacks"));
         stacks.setHint(Component.literal("1"));
         stacks.setValue("1");
         addRenderableWidget(stacks);
-        addRenderableWidget(Button.builder(Component.literal("Give stacks (x64)"),
-                b -> submit(parse(stacks.getValue(), 1) * 64))
-                .bounds(x, y + 4 * (bh + gap), w, bh).build());
+        addRenderableWidget(CheatWidget.of(x, y2 + bh + 4, rowW, bh, "GIVE STACKS × 64",
+                () -> submit(parse(stacks.getValue(), 1) * 64)));
 
-        addRenderableWidget(Button.builder(Component.literal("Cancel"),
-                b -> minecraft.gui.setScreen(returnTo))
-                .bounds(x, y + 5 * (bh + gap) + 6, w, bh).build());
+        addRenderableWidget(CheatWidget.of(x, panelY() + panelHeight() - bh - 8, rowW, bh, "CANCEL",
+                () -> minecraft.gui.setScreen(returnTo)));
 
         setInitialFocus(items);
     }
@@ -58,5 +63,17 @@ public final class CountPromptScreen extends Screen {
     private void submit(int count) {
         onSubmit.accept(count);
         minecraft.gui.setScreen(returnTo);
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float dt) {
+        super.extractRenderState(g, mx, my, dt);
+        int x = panelX() + 20;
+        int y = contentY();
+        g.text(font, Component.literal("> " + targetLabel.toUpperCase()), x, y, Theme.TEXT_ACCENT, false);
+        int bh = 18;
+        g.text(font, Component.literal("items"),  x, y + bh + 15, Theme.TEXT_DIM, false);
+        int y2 = y + 3 * bh + 30;
+        g.text(font, Component.literal("stacks"), x, y2, Theme.TEXT_DIM, false);
     }
 }

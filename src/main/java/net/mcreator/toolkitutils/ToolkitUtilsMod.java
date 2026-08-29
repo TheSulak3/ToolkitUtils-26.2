@@ -91,6 +91,9 @@ public final class ToolkitUtilsMod implements ModInitializer {
         try {
             int result = server.getCommands().getDispatcher().execute(cmd, source);
             LOGGER.debug("executed '{}' result={}", cmd, result);
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            // Expected "no target" cases (empty inv on clear, no mobs in range for kill, etc.) — not a real error
+            LOGGER.debug("no-op '{}': {}", cmd, e.getMessage());
         } catch (Exception e) {
             LOGGER.error("command failed: {}", cmd, e);
         } finally {

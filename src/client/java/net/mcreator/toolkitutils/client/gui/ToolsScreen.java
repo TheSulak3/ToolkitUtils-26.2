@@ -1,14 +1,14 @@
 package net.mcreator.toolkitutils.client.gui;
 
+import net.mcreator.toolkitutils.client.gui.theme.CheatBaseScreen;
+import net.mcreator.toolkitutils.client.gui.theme.CheatWidget;
 import net.mcreator.toolkitutils.procedures.CommandUtils;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 
-public final class ToolsScreen extends Screen {
-    public ToolsScreen() { super(Component.literal("")); }
+public final class ToolsScreen extends CheatBaseScreen {
+    public ToolsScreen() { super("tools & gear"); }
 
-    @Override public boolean isPauseScreen() { return false; }
+    @Override protected int panelWidth()  { return 400; }
+    @Override protected int panelHeight() { return 220; }
 
     private static final String E_ARMOR = "[minecraft:enchantments={\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:thorns\":3}]";
     private static final String E_SWORD = "[minecraft:enchantments={\"minecraft:sharpness\":5,\"minecraft:looting\":3,\"minecraft:sweeping_edge\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fire_aspect\":2}]";
@@ -18,8 +18,8 @@ public final class ToolsScreen extends Screen {
     private static final String E_HOE   = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fortune\":3}]";
     private static final String E_BOW   = "[minecraft:enchantments={\"minecraft:power\":5,\"minecraft:infinity\":1,\"minecraft:unbreaking\":3,\"minecraft:flame\":1,\"minecraft:punch\":2}]";
     private static final String E_XBOW  = "[minecraft:enchantments={\"minecraft:quick_charge\":3,\"minecraft:multishot\":1,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
-    private static final String E_TRIDENT="[minecraft:enchantments={\"minecraft:loyalty\":3,\"minecraft:channeling\":1,\"minecraft:impaling\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
-    private static final String E_ELYTRA= "[minecraft:enchantments={\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_TRID  = "[minecraft:enchantments={\"minecraft:loyalty\":3,\"minecraft:channeling\":1,\"minecraft:impaling\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_ELY   = "[minecraft:enchantments={\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
     private static final String E_SHIELD= "[minecraft:enchantments={\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
     private static final String E_ROD   = "[minecraft:enchantments={\"minecraft:luck_of_the_sea\":3,\"minecraft:lure\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
 
@@ -42,8 +42,8 @@ public final class ToolsScreen extends Screen {
 
             new T("Bow",       "give @s minecraft:bow" + E_BOW),
             new T("Crossbow",  "give @s minecraft:crossbow" + E_XBOW),
-            new T("Trident",   "give @s minecraft:trident" + E_TRIDENT),
-            new T("Elytra",    "give @s minecraft:elytra" + E_ELYTRA),
+            new T("Trident",   "give @s minecraft:trident" + E_TRID),
+            new T("Elytra",    "give @s minecraft:elytra" + E_ELY),
             new T("Shield",    "give @s minecraft:shield" + E_SHIELD),
 
             new T("Fish Rod",  "give @s minecraft:fishing_rod" + E_ROD),
@@ -60,23 +60,20 @@ public final class ToolsScreen extends Screen {
         };
 
         int cols = 5;
-        int bw = 62, bh = 18, gap = 3;
+        int bw = 70, bh = 18, gap = 4;
         int rows = (entries.length + cols - 1) / cols;
         int gridW = cols * bw + (cols - 1) * gap;
-        int gridH = rows * bh + (rows - 1) * gap;
-        int x0 = (width - gridW) / 2;
-        int y0 = (height - gridH - bh - 8) / 2;
+        int x0 = panelX() + (panelWidth() - gridW) / 2;
+        int y0 = contentY() + 8;
 
         for (int i = 0; i < entries.length; i++) {
             int r = i / cols, c = i % cols;
             final T t = entries[i];
-            addRenderableWidget(Button.builder(Component.literal(t.label),
-                    b -> CommandUtils.send(t.cmd))
-                    .bounds(x0 + c * (bw + gap), y0 + r * (bh + gap), bw, bh).build());
+            addRenderableWidget(CheatWidget.of(x0 + c * (bw + gap), y0 + r * (bh + gap), bw, bh,
+                    t.label, () -> CommandUtils.send(t.cmd)));
         }
 
-        addRenderableWidget(Button.builder(Component.literal("Back"),
-                b -> minecraft.gui.setScreen(new CheatMenuScreen()))
-                .bounds(x0, y0 + rows * (bh + gap) + 6, gridW, bh).build());
+        addRenderableWidget(CheatWidget.of(x0, panelY() + panelHeight() - bh - 8, gridW, bh,
+                "BACK", () -> minecraft.gui.setScreen(new CheatMenuScreen())));
     }
 }

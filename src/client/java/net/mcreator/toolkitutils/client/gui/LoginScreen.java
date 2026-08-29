@@ -2,36 +2,43 @@ package net.mcreator.toolkitutils.client.gui;
 
 import net.mcreator.toolkitutils.client.ClientInit;
 import net.mcreator.toolkitutils.client.ToolkitConfig;
-import net.minecraft.client.gui.components.Button;
+import net.mcreator.toolkitutils.client.gui.theme.CheatBaseScreen;
+import net.mcreator.toolkitutils.client.gui.theme.CheatWidget;
+import net.mcreator.toolkitutils.client.gui.theme.Theme;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-public final class LoginScreen extends Screen {
+public final class LoginScreen extends CheatBaseScreen {
     private EditBox idBox, codeBox;
+    private boolean failed;
 
-    public LoginScreen() { super(Component.literal("")); }
+    public LoginScreen() { super("auth"); }
 
-    @Override public boolean isPauseScreen() { return false; }
+    @Override protected int panelWidth()  { return 260; }
+    @Override protected int panelHeight() { return 170; }
 
     @Override
     protected void init() {
-        int w = 160, h = 20, gap = 6;
-        int x = (width - w) / 2;
-        int y = (height - (3 * h + 2 * gap)) / 2;
+        int w = panelWidth() - 40, h = 18, gap = 8;
+        int x = panelX() + 20;
+        int y = contentY() + 12;
 
-        idBox = new EditBox(font, x, y, w, h, Component.literal("id"));
-        idBox.setHint(Component.literal("power id"));
-        addRenderableWidget(idBox);
+        addRenderableWidget(labelledEdit(x, y, w, h, "power id", false, e -> idBox = e));
+        addRenderableWidget(labelledEdit(x, y + (h + gap) + 10, w, h, "power code", true, e -> codeBox = e));
 
-        codeBox = new EditBox(font, x, y + h + gap, w, h, Component.literal("code"));
-        codeBox.setHint(Component.literal("power code"));
-        codeBox.setMaxLength(64);
-        addRenderableWidget(codeBox);
+        addRenderableWidget(CheatWidget.of(x, y + 2 * (h + gap) + 28, w, h, "AUTHENTICATE", this::check));
+        addRenderableWidget(CheatWidget.of(x, y + 3 * (h + gap) + 30, w, h, "CANCEL", this::onClose));
 
-        addRenderableWidget(Button.builder(Component.literal("Enter"), b -> check())
-                .bounds(x, y + 2 * (h + gap), w, h).build());
         setInitialFocus(idBox);
+    }
+
+    private EditBox labelledEdit(int x, int y, int w, int h, String hint, boolean secret, java.util.function.Consumer<EditBox> capture) {
+        EditBox e = new EditBox(font, x, y, w, h, Component.literal(hint));
+        e.setHint(Component.literal(hint));
+        if (secret) e.setMaxLength(128);
+        capture.accept(e);
+        return e;
     }
 
     private void check() {
@@ -39,7 +46,19 @@ public final class LoginScreen extends Screen {
             ClientInit.AUTHENTICATED = true;
             minecraft.gui.setScreen(new CheatMenuScreen());
         } else {
+            failed = true;
             codeBox.setValue("");
+        }
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float dt) {
+        super.extractRenderState(g, mx, my, dt);
+        int x = panelX() + 20;
+        int y = contentY();
+        g.text(font, Component.literal("> ACCESS REQUIRED"), x, y, Theme.TEXT_ACCENT, false);
+        if (failed) {
+            g.text(font, Component.literal("invalid credentials"), x, panelY() + panelHeight() - 14, 0xFFFF4466, false);
         }
     }
 }
