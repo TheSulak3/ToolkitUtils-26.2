@@ -53,5 +53,5 @@ public final class LoginScreen extends Screen {
     }
 
     @Override public boolean shouldCloseOnEsc() { return true; }
-    @Override public boolean shouldPause() { return false; }
+    @Override public boolean isPauseScreen() { return false; }
 }
