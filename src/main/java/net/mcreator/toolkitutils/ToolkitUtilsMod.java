@@ -5,16 +5,21 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.mcreator.toolkitutils.network.ExecuteCommandPayload;
 import net.mcreator.toolkitutils.network.VanishPayload;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ToolkitUtilsMod implements ModInitializer {
@@ -57,10 +62,12 @@ public final class ToolkitUtilsMod implements ModInitializer {
                 if (payload.hide()) {
                     runAsPlayer(server, player, "effect give @s minecraft:invisibility 100000 0 true");
                     broadcastToOthers(server, player, new ClientboundPlayerInfoRemovePacket(List.of(player.getUUID())));
+                    broadcastToOthers(server, player, emptyEquipmentPacket(player));
                 } else {
                     runAsPlayer(server, player, "effect clear @s minecraft:invisibility");
                     broadcastToOthers(server, player,
                             ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(player)));
+                    broadcastToOthers(server, player, realEquipmentPacket(player));
                 }
             });
         });
@@ -87,6 +94,22 @@ public final class ToolkitUtilsMod implements ModInitializer {
         } finally {
             if (prev) announce.set(true, server);
         }
+    }
+
+    private static ClientboundSetEquipmentPacket emptyEquipmentPacket(ServerPlayer player) {
+        List<Pair<EquipmentSlot, ItemStack>> slots = new ArrayList<>();
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            slots.add(Pair.of(slot, ItemStack.EMPTY));
+        }
+        return new ClientboundSetEquipmentPacket(player.getId(), slots);
+    }
+
+    private static ClientboundSetEquipmentPacket realEquipmentPacket(ServerPlayer player) {
+        List<Pair<EquipmentSlot, ItemStack>> slots = new ArrayList<>();
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            slots.add(Pair.of(slot, player.getItemBySlot(slot).copy()));
+        }
+        return new ClientboundSetEquipmentPacket(player.getId(), slots);
     }
 
     private static void broadcastToOthers(MinecraftServer server, ServerPlayer skip, Packet<?> pkt) {
