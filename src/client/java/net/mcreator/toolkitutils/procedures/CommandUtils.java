@@ -17,25 +17,22 @@ public final class CommandUtils {
 
     public static void send(String command) {
         LocalPlayer p = player();
-        if (p == null) { LOG.warn("[toolkit_utils] send() aborted: no local player"); return; }
+        if (p == null) { LOG.warn("send() aborted: no local player"); return; }
         if (Minecraft.getInstance().getConnection() == null) {
-            LOG.warn("[toolkit_utils] send() aborted: no ClientPacketListener (not connected)"); return;
+            LOG.warn("send() aborted: not connected"); return;
         }
-        if (command == null || command.isBlank()) {
-            LOG.warn("[toolkit_utils] send() aborted: empty command"); return;
-        }
+        if (command == null || command.isBlank()) return;
         if (command.startsWith("/")) command = command.substring(1);
 
-        boolean ok = ClientPlayNetworking.canSend(ExecuteCommandPayload.TYPE);
-        if (!ok) {
-            LOG.error("[toolkit_utils] canSend=false — server didn't register payload. Mod missing/mismatched server-side.");
+        if (!ClientPlayNetworking.canSend(ExecuteCommandPayload.TYPE)) {
+            LOG.error("canSend=false — mod missing server-side or handshake failed.");
             return;
         }
-        LOG.info("[toolkit_utils] -> server: {}", command);
+        LOG.debug("-> server: {}", command);
         try {
             ClientPlayNetworking.send(new ExecuteCommandPayload(command));
         } catch (Exception e) {
-            LOG.error("[toolkit_utils] send() threw for '{}'", command, e);
+            LOG.error("send() threw for '{}'", command, e);
         }
     }
 

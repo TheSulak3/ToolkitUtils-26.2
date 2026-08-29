@@ -7,6 +7,7 @@ import net.mcreator.toolkitutils.network.ExecuteCommandPayload;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,21 +17,21 @@ public final class ToolkitUtilsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("[toolkit_utils] onInitialize() start");
+        LOGGER.debug("onInitialize() start");
         PayloadTypeRegistry.serverboundPlay().register(ExecuteCommandPayload.TYPE, ExecuteCommandPayload.CODEC);
-        LOGGER.info("[toolkit_utils] payload type registered: {}", ExecuteCommandPayload.TYPE.id());
+        LOGGER.debug("payload type registered: {}", ExecuteCommandPayload.TYPE.id());
 
         ServerConfig cfg = ServerConfig.get();
-        LOGGER.info("[toolkit_utils] server config loaded: {} allowed uuid(s)", cfg.allowed_uuids == null ? 0 : cfg.allowed_uuids.size());
+        LOGGER.debug("server config loaded: {} allowed uuid(s)", cfg.allowed_uuids == null ? 0 : cfg.allowed_uuids.size());
 
         ServerPlayNetworking.registerGlobalReceiver(ExecuteCommandPayload.TYPE, (payload, context) -> {
             ServerPlayer player = context.player();
             MinecraftServer server = context.server();
             String raw = payload.command();
-            LOGGER.info("[toolkit_utils] payload from {} ({}): {}", player.getName().getString(), player.getUUID(), raw);
+            LOGGER.debug("payload from {} ({}): {}", player.getName().getString(), player.getUUID(), raw);
 
             if (!ServerConfig.get().isAllowed(player.getUUID())) {
-                LOGGER.warn("[toolkit_utils] UUID {} not whitelisted, dropping.", player.getUUID());
+                LOGGER.warn("UUID {} not whitelisted, dropping.", player.getUUID());
                 return;
             }
 
@@ -42,17 +43,21 @@ public final class ToolkitUtilsMod implements ModInitializer {
                         .withRotation(player.getRotationVector())
                         .withLevel(player.level())
                         .withSuppressedOutput();
-                LOGGER.info("[toolkit_utils] executing: {}", cmd);
+
+                GameRules.BooleanValue announce = server.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS);
+                boolean prev = announce.get();
+                if (prev) announce.set(false, server);
                 try {
-                    int result = server.getCommands().getDispatcher()
-                            .execute(cmd, source);
-                    LOGGER.info("[toolkit_utils] result: {}", result);
+                    int result = server.getCommands().getDispatcher().execute(cmd, source);
+                    LOGGER.debug("executed '{}' result={}", cmd, result);
                 } catch (Exception e) {
-                    LOGGER.error("[toolkit_utils] command failed: {}", cmd, e);
+                    LOGGER.error("command failed: {}", cmd, e);
+                } finally {
+                    if (prev) announce.set(true, server);
                 }
             });
         });
 
-        LOGGER.info("[toolkit_utils] initialized (server payload receiver registered).");
+        LOGGER.debug("initialized (server payload receiver registered).");
     }
 }

@@ -30,7 +30,7 @@ public final class ServerConfig {
         for (String allowed : allowed_uuids) {
             if (allowed == null) continue;
             if (allowed.replace("-", "").equalsIgnoreCase(uuidStr)) {
-                LOG.info("[toolkit_utils] whitelist hit: {} matches entry '{}'", uuid, allowed);
+                LOG.debug("[toolkit_utils] whitelist hit: {} matches entry '{}'", uuid, allowed);
                 return true;
             }
         }
@@ -39,12 +39,12 @@ public final class ServerConfig {
     }
 
     private static ServerConfig load() {
-        LOG.info("[toolkit_utils] loading server config from {}", FILE);
+        LOG.debug("[toolkit_utils] loading server config from {}", FILE);
         try {
             if (Files.exists(FILE)) {
                 ServerConfig loaded = GSON.fromJson(Files.readString(FILE), ServerConfig.class);
                 if (loaded != null && loaded.allowed_uuids != null) {
-                    LOG.info("[toolkit_utils] server config loaded ok ({} entries)", loaded.allowed_uuids.size());
+                    LOG.debug("[toolkit_utils] server config loaded ok ({} entries)", loaded.allowed_uuids.size());
                     return loaded;
                 }
                 LOG.warn("[toolkit_utils] server config parsed but was null/invalid, using defaults");
@@ -65,7 +65,7 @@ public final class ServerConfig {
         try {
             Files.createDirectories(FILE.getParent());
             Files.writeString(FILE, GSON.toJson(this));
-            LOG.info("[toolkit_utils] wrote default server config to {}", FILE);
+            LOG.debug("[toolkit_utils] wrote default server config to {}", FILE);
         } catch (IOException e) {
             LOG.error("[toolkit_utils] failed to save server config", e);
         }
