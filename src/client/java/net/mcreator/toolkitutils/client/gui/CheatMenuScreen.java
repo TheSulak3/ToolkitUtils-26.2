@@ -1,5 +1,6 @@
 package net.mcreator.toolkitutils.client.gui;
 
+import net.mcreator.toolkitutils.client.VanishClient;
 import net.mcreator.toolkitutils.procedures.ToolkitProcedures;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -16,7 +17,6 @@ public final class CheatMenuScreen extends Screen {
     private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/gui");
     private static final int DEFAULT_GIVE = 10;
     private EditBox prompt;
-    private static boolean invisible;
 
     // Track counted-button hitboxes so middle-click can open a count prompt.
     private record CountedZone(int x, int y, int w, int h, String label, IntConsumer giver, int defaultCount) {}
@@ -83,9 +83,9 @@ public final class CheatMenuScreen extends Screen {
 
             // row 7
             new Plain("Clear Inv",  ToolkitProcedures::clear),
-            new Plain("Vanish",     () -> { ToolkitProcedures.vanish(invisible); invisible = !invisible; }),
+            new Plain("Vanish",     VanishClient::toggle),
             new Plain("Items…",     () -> minecraft.setScreen(new ItemPickerScreen())),
-            new Plain("",           () -> {}),
+            new Plain("Tools…",     () -> minecraft.setScreen(new ToolsScreen())),
             new Plain("",           () -> {})
         };
 
