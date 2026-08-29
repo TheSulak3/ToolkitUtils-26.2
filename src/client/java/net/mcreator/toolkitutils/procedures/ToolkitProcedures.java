@@ -27,12 +27,12 @@ public final class ToolkitProcedures {
 
     // --- kits ---
     public static void godKit() {
-        String enchArmor = "[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:thorns\":3}}]";
-        String enchSword = "[minecraft:enchantments={levels:{\"minecraft:sharpness\":5,\"minecraft:looting\":3,\"minecraft:sweeping_edge\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fire_aspect\":2}}]";
-        String enchPick  = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:fortune\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-        String enchAxe   = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-        String enchShov  = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-        String enchBow   = "[minecraft:enchantments={levels:{\"minecraft:power\":5,\"minecraft:infinity\":1,\"minecraft:unbreaking\":3,\"minecraft:flame\":1}}]";
+        String enchArmor = "[minecraft:enchantments={\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:thorns\":3}]";
+        String enchSword = "[minecraft:enchantments={\"minecraft:sharpness\":5,\"minecraft:looting\":3,\"minecraft:sweeping_edge\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fire_aspect\":2}]";
+        String enchPick  = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:fortune\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+        String enchAxe   = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+        String enchShov  = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+        String enchBow   = "[minecraft:enchantments={\"minecraft:power\":5,\"minecraft:infinity\":1,\"minecraft:unbreaking\":3,\"minecraft:flame\":1}]";
         CommandUtils.send("item replace entity @s armor.head with minecraft:netherite_helmet" + enchArmor);
         CommandUtils.send("item replace entity @s armor.chest with minecraft:netherite_chestplate" + enchArmor);
         CommandUtils.send("item replace entity @s armor.legs with minecraft:netherite_leggings" + enchArmor);

@@ -10,18 +10,18 @@ public final class ToolsScreen extends Screen {
 
     @Override public boolean isPauseScreen() { return false; }
 
-    private static final String E_ARMOR = "[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:thorns\":3}}]";
-    private static final String E_SWORD = "[minecraft:enchantments={levels:{\"minecraft:sharpness\":5,\"minecraft:looting\":3,\"minecraft:sweeping_edge\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fire_aspect\":2}}]";
-    private static final String E_PICK  = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:fortune\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_AXE   = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_SHOV  = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_HOE   = "[minecraft:enchantments={levels:{\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fortune\":3}}]";
-    private static final String E_BOW   = "[minecraft:enchantments={levels:{\"minecraft:power\":5,\"minecraft:infinity\":1,\"minecraft:unbreaking\":3,\"minecraft:flame\":1,\"minecraft:punch\":2}}]";
-    private static final String E_XBOW  = "[minecraft:enchantments={levels:{\"minecraft:quick_charge\":3,\"minecraft:multishot\":1,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_TRIDENT="[minecraft:enchantments={levels:{\"minecraft:loyalty\":3,\"minecraft:channeling\":1,\"minecraft:impaling\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_ELYTRA= "[minecraft:enchantments={levels:{\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_SHIELD= "[minecraft:enchantments={levels:{\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
-    private static final String E_ROD   = "[minecraft:enchantments={levels:{\"minecraft:luck_of_the_sea\":3,\"minecraft:lure\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}}]";
+    private static final String E_ARMOR = "[minecraft:enchantments={\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:thorns\":3}]";
+    private static final String E_SWORD = "[minecraft:enchantments={\"minecraft:sharpness\":5,\"minecraft:looting\":3,\"minecraft:sweeping_edge\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fire_aspect\":2}]";
+    private static final String E_PICK  = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:fortune\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_AXE   = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_SHOV  = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_HOE   = "[minecraft:enchantments={\"minecraft:efficiency\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1,\"minecraft:fortune\":3}]";
+    private static final String E_BOW   = "[minecraft:enchantments={\"minecraft:power\":5,\"minecraft:infinity\":1,\"minecraft:unbreaking\":3,\"minecraft:flame\":1,\"minecraft:punch\":2}]";
+    private static final String E_XBOW  = "[minecraft:enchantments={\"minecraft:quick_charge\":3,\"minecraft:multishot\":1,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_TRIDENT="[minecraft:enchantments={\"minecraft:loyalty\":3,\"minecraft:channeling\":1,\"minecraft:impaling\":5,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_ELYTRA= "[minecraft:enchantments={\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_SHIELD= "[minecraft:enchantments={\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
+    private static final String E_ROD   = "[minecraft:enchantments={\"minecraft:luck_of_the_sea\":3,\"minecraft:lure\":3,\"minecraft:unbreaking\":3,\"minecraft:mending\":1}]";
 
     private record T(String label, String cmd) {}
 
