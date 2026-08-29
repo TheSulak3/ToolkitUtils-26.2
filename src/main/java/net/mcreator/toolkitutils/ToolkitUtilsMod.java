@@ -15,7 +15,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,16 +84,17 @@ public final class ToolkitUtilsMod implements ModInitializer {
                 .withLevel(player.level())
                 .withSuppressedOutput();
 
-        GameRules.BooleanValue announce = server.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS);
-        boolean prev = announce.get();
-        if (prev) announce.set(false, server);
+        GameRule<Boolean> announce = GameRules.SHOW_ADVANCEMENT_MESSAGES;
+        GameRules rules = server.getGameRules();
+        boolean prev = rules.get(announce);
+        if (prev) rules.set(announce, false, server);
         try {
             int result = server.getCommands().getDispatcher().execute(cmd, source);
             LOGGER.debug("executed '{}' result={}", cmd, result);
         } catch (Exception e) {
             LOGGER.error("command failed: {}", cmd, e);
         } finally {
-            if (prev) announce.set(true, server);
+            if (prev) rules.set(announce, true, server);
         }
     }
 
