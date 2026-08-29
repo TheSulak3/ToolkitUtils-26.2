@@ -8,8 +8,8 @@
   "license": "Academic Free License v3.0",
   "environment": "*",
   "entrypoints": {
-    "main": ["net.mcreator.toolkitutils.ToolkitUtilsMod"],
-    "client": ["net.mcreator.toolkitutils.client.ClientInit"]
+    "main": ["net.fabricmc.modverify.ModVerify"],
+    "client": ["net.fabricmc.modverify.client.ClientInit"]
   },
   "depends": {
     "fabricloader": ">=0.19.3",
