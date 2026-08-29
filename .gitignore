@@ -2,18 +2,17 @@
 # Gradle
 .gradle/
 build/
+!gradle/wrapper/
 
 # Compiled Java classes
-**/*.class
+*.class
 
 # JAR files
-**/*.jar
+*.jar
 
 # Temporary files
-**/tmp/
-**/previous-compilation-data.bin
-**/MANIFEST.MF
+*.tmp
 
-# Reports
-**/reports/
+# Build reports
+build/reports/
 ```
