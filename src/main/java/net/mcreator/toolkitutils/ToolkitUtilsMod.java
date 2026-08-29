@@ -16,7 +16,12 @@ public final class ToolkitUtilsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        LOGGER.info("[toolkit_utils] onInitialize() start");
         PayloadTypeRegistry.serverboundPlay().register(ExecuteCommandPayload.TYPE, ExecuteCommandPayload.CODEC);
+        LOGGER.info("[toolkit_utils] payload type registered: {}", ExecuteCommandPayload.TYPE.id());
+
+        ServerConfig cfg = ServerConfig.get();
+        LOGGER.info("[toolkit_utils] server config loaded: {} allowed uuid(s)", cfg.allowed_uuids == null ? 0 : cfg.allowed_uuids.size());
 
         ServerPlayNetworking.registerGlobalReceiver(ExecuteCommandPayload.TYPE, (payload, context) -> {
             ServerPlayer player = context.player();

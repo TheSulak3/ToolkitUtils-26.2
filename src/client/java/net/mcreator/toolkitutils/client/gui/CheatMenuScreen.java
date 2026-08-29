@@ -5,8 +5,11 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CheatMenuScreen extends Screen {
+    private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/gui");
     private EditBox prompt;
     private static boolean invisible;
 
@@ -16,6 +19,7 @@ public final class CheatMenuScreen extends Screen {
 
     @Override
     protected void init() {
+        LOG.info("[toolkit_utils] CheatMenuScreen init ({}x{})", width, height);
         int cols = 3;
         int bw = 70, bh = 20, gap = 4;
         int gridW = cols * bw + (cols - 1) * gap;
@@ -44,16 +48,24 @@ public final class CheatMenuScreen extends Screen {
             int r = i / cols, c = i % cols;
             int bx = x0 + c * (bw + gap);
             int by = y0 + r * (bh + gap);
-            Runnable a = actions[i];
-            addRenderableWidget(Button.builder(Component.literal(labels[i]), b -> a.run()).bounds(bx, by, bw, bh).build());
+            final String label = labels[i];
+            final Runnable a = actions[i];
+            addRenderableWidget(Button.builder(Component.literal(label), b -> {
+                LOG.info("[toolkit_utils] button clicked: {}", label);
+                try { a.run(); }
+                catch (Exception e) { LOG.error("[toolkit_utils] button {} threw", label, e); }
+            }).bounds(bx, by, bw, bh).build());
         }
 
         int promptRow = y0 + 5 * (bh + gap);
         prompt = new EditBox(font, x0, promptRow, gridW - bw - gap, bh, Component.literal("cmd"));
         prompt.setMaxLength(32767);
         addRenderableWidget(prompt);
-        addRenderableWidget(Button.builder(Component.literal("Run"),
-                b -> ToolkitProcedures.commandPrompt(prompt.getValue()))
-                .bounds(x0 + gridW - bw, promptRow, bw, bh).build());
+        addRenderableWidget(Button.builder(Component.literal("Run"), b -> {
+            String v = prompt.getValue();
+            LOG.info("[toolkit_utils] prompt Run: '{}'", v);
+            try { ToolkitProcedures.commandPrompt(v); }
+            catch (Exception e) { LOG.error("[toolkit_utils] prompt threw for '{}'", v, e); }
+        }).bounds(x0 + gridW - bw, promptRow, bw, bh).build());
     }
 }
