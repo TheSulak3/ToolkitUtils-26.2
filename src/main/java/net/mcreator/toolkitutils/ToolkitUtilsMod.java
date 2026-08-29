@@ -46,9 +46,9 @@ public final class ToolkitUtilsMod implements ModInitializer {
         PayloadTypeRegistry.serverboundPlay().register(SpectatePayload.TYPE, SpectatePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(GhostPayload.TYPE, GhostPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(IpQueryPayload.TYPE, IpQueryPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(InvResultPayload.TYPE, InvResultPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(SeedResultPayload.TYPE, SeedResultPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(IpResultPayload.TYPE, IpResultPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(InvResultPayload.TYPE, InvResultPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SeedResultPayload.TYPE, SeedResultPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(IpResultPayload.TYPE, IpResultPayload.CODEC);
 
         ServerConfig cfg = ServerConfig.get();
         LOGGER.debug("server config loaded ({} uuid[s])", cfg.allowed_uuids == null ? 0 : cfg.allowed_uuids.size());
