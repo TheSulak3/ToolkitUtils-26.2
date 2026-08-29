@@ -1,27 +1,19 @@
 ```
 # Gradle
 .gradle/
-!gradle/wrapper/
-
-# Build artifacts
 build/
-!buildSrc/
 
-# IDE
-.idea/
-*.iml
-*.ipr
-*.iws
+# Compiled Java classes
+**/*.class
 
-# Logs
-*.log
+# JAR files
+**/*.jar
 
-# Environment
-.env
-.env.local
-*.env.*
+# Temporary files
+**/tmp/
+**/previous-compilation-data.bin
+**/MANIFEST.MF
 
-# OS
-.DS_Store
-Thumbs.db
+# Reports
+**/reports/
 ```
