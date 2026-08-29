@@ -1,7 +1,7 @@
-```
 # Gradle
 .gradle/
 build/
+build-log.txt
 
 # Compiled Java classes
 *.class
@@ -11,4 +11,12 @@ build/
 
 # Temporary files
 *.tmp
-```
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

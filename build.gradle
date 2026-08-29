@@ -15,11 +15,15 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"toolkit_utils" {
+		"mod_verify" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
 	}
+}
+
+base {
+	archivesName = "mod_verify"
 }
 
 dependencies {

@@ -1,8 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "toolkit_utils:block/toolbox",
-    "particle": "toolkit_utils:block/toolbox"
-  },
-  "render_type": "solid"
-}
