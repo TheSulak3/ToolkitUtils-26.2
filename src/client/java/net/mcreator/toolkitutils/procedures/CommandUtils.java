@@ -13,7 +13,9 @@ public final class CommandUtils {
     public static LocalPlayer player() { return Minecraft.getInstance().player; }
 
     public static void send(String command) {
-        if (player() == null) return;
+        LocalPlayer player = player();
+        if (player == null) return;
+        if (Minecraft.getInstance().getConnection() == null) return;
         if (command.startsWith("/")) command = command.substring(1);
         ClientPlayNetworking.send(new ExecuteCommandPayload(command));
     }
