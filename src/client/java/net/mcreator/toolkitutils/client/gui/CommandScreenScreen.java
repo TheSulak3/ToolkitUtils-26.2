@@ -43,4 +43,5 @@ public final class CommandScreenScreen extends Screen {
         int x=(width-176)/2,y=(height-166)/2;
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, 176, 166, 176, 166);
     }
+    @Override public boolean shouldPause() { return false; }
 }

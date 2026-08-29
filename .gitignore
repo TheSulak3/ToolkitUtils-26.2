@@ -1,0 +1,27 @@
+```
+# Gradle
+.gradle/
+!gradle/wrapper/
+
+# Build artifacts
+build/
+!buildSrc/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+```
