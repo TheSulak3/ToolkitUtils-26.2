@@ -2,7 +2,6 @@
 # Gradle
 .gradle/
 build/
-!gradle/wrapper/
 
 # Compiled Java classes
 *.class
@@ -12,7 +11,4 @@ build/
 
 # Temporary files
 *.tmp
-
-# Build reports
-build/reports/
 ```
