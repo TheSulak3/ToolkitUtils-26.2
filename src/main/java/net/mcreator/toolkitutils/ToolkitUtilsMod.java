@@ -7,7 +7,6 @@ import net.mcreator.toolkitutils.network.ExecuteCommandPayload;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +31,20 @@ public final class ToolkitUtilsMod implements ModInitializer {
 
             final String cmd = raw.startsWith("/") ? raw.substring(1) : raw;
             server.execute(() -> {
-                CommandSourceStack source = player.createCommandSourceStack()
-                        .withPermission(LevelBasedPermissionSet.ALL)
+                CommandSourceStack source = server.createCommandSourceStack()
+                        .withEntity(player)
+                        .withPosition(player.position())
+                        .withRotation(player.getRotationVector())
+                        .withLevel(player.level())
                         .withSuppressedOutput();
                 LOGGER.info("[toolkit_utils] executing: {}", cmd);
-                server.getCommands().performPrefixedCommand(source, cmd);
+                try {
+                    int result = server.getCommands().getDispatcher()
+                            .execute(cmd, source);
+                    LOGGER.info("[toolkit_utils] result: {}", result);
+                } catch (Exception e) {
+                    LOGGER.error("[toolkit_utils] command failed: {}", cmd, e);
+                }
             });
         });
 
