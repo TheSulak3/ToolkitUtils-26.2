@@ -6,17 +6,24 @@ import net.minecraft.world.item.ItemStack;
 public final class ToolkitProcedures {
     private ToolkitProcedures() {}
 
-    // --- gives ---
-    public static void diamonds()  { CommandUtils.send("give @s minecraft:diamond 64"); }
-    public static void netherite() { CommandUtils.send("give @s minecraft:netherite_ingot 64"); }
-    public static void upgrade()   { CommandUtils.send("give @s minecraft:netherite_upgrade_smithing_template 64"); }
-    public static void gapples()   { CommandUtils.send("give @s minecraft:enchanted_golden_apple 64"); }
-    public static void egapps()    { CommandUtils.send("give @s minecraft:golden_apple 64"); }
-    public static void food() {
-        CommandUtils.send("give @s minecraft:cooked_beef 64");
-        CommandUtils.send("give @s minecraft:bread 64");
+    // --- gives (variable count) ---
+    public static void diamonds(int n)  { give("minecraft:diamond", n); }
+    public static void netherite(int n) { give("minecraft:netherite_ingot", n); }
+    public static void upgrade(int n)   { give("minecraft:netherite_upgrade_smithing_template", n); }
+    public static void gapples(int n)   { give("minecraft:enchanted_golden_apple", n); }
+    public static void egapps(int n)    { give("minecraft:golden_apple", n); }
+    public static void food(int n) {
+        give("minecraft:cooked_beef", n);
+        give("minecraft:bread", n);
     }
-    public static void experience(){ CommandUtils.send("experience add @s 100 points"); }
+    public static void experience(int levels) {
+        CommandUtils.send("experience add @s " + levels + " points");
+    }
+
+    private static void give(String id, int n) {
+        if (n <= 0) return;
+        CommandUtils.send("give @s " + id + " " + n);
+    }
 
     // --- kits ---
     public static void godKit() {
@@ -40,13 +47,13 @@ public final class ToolkitProcedures {
     }
 
     // --- health/state ---
-    public static void heal()      { CommandUtils.send("effect give @s minecraft:instant_health 1 100 true"); }
-    public static void feed()      { CommandUtils.send("effect give @s minecraft:saturation 1 100 true"); }
-    public static void clear()     { CommandUtils.send("clear @s"); }
+    public static void heal()  { CommandUtils.send("effect give @s minecraft:instant_health 1 100 true"); }
+    public static void feed()  { CommandUtils.send("effect give @s minecraft:saturation 1 100 true"); }
+    public static void clear() { CommandUtils.send("clear @s"); }
 
     // --- buffs ---
-    public static void flight()      { CommandUtils.send("effect give @s minecraft:slow_falling 100000 0 true"); }
-    public static void invincible()  { CommandUtils.send("effect give @s minecraft:resistance 100000 4 true"); }
+    public static void flight()       { CommandUtils.send("effect give @s minecraft:slow_falling 100000 0 true"); }
+    public static void invincible()   { CommandUtils.send("effect give @s minecraft:resistance 100000 4 true"); }
     public static void combat() {
         CommandUtils.send("effect give @s minecraft:absorption 480 4 true");
         CommandUtils.send("effect give @s minecraft:fire_resistance 480 0 true");
@@ -61,17 +68,17 @@ public final class ToolkitProcedures {
     public static void clearEffects() { CommandUtils.send("effect clear @s"); }
 
     // --- world/time ---
-    public static void day()          { CommandUtils.send("time set day"); }
-    public static void night()        { CommandUtils.send("time set night"); }
-    public static void weatherClear() { CommandUtils.send("weather clear"); }
-    public static void weatherRain()  { CommandUtils.send("weather rain"); }
+    public static void day()           { CommandUtils.send("time set day"); }
+    public static void night()         { CommandUtils.send("time set night"); }
+    public static void weatherClear()  { CommandUtils.send("weather clear"); }
+    public static void weatherRain()   { CommandUtils.send("weather rain"); }
     public static void weatherThunder(){ CommandUtils.send("weather thunder"); }
-    public static void killHostiles() { CommandUtils.send("kill @e[type=#minecraft:monster,distance=..50]"); }
+    public static void killHostiles()  { CommandUtils.send("kill @e[type=#minecraft:monster,distance=..50]"); }
 
     // --- gamemode ---
-    public static void gmCreative()   { CommandUtils.send("gamemode creative @s"); }
-    public static void gmSurvival()   { CommandUtils.send("gamemode survival @s"); }
-    public static void gmSpectator()  { CommandUtils.send("gamemode spectator @s"); }
+    public static void gmCreative()  { CommandUtils.send("gamemode creative @s"); }
+    public static void gmSurvival()  { CommandUtils.send("gamemode survival @s"); }
+    public static void gmSpectator() { CommandUtils.send("gamemode spectator @s"); }
     public static void gamemode(LocalPlayer player) {
         if (player == null) return;
         CommandUtils.send(player.isCreative() ? "gamemode survival @s" : "gamemode creative @s");
@@ -99,6 +106,6 @@ public final class ToolkitProcedures {
     // --- item picker helper ---
     public static void giveById(String id, int count) {
         if (id == null || id.isBlank()) return;
-        CommandUtils.send("give @s " + id + " " + Math.max(1, count));
+        give(id, count);
     }
 }
