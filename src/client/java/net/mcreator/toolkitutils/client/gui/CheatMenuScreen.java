@@ -70,7 +70,7 @@ public final class CheatMenuScreen extends CheatBaseScreen {
                     () -> {
                         if (cat != activeCategory) {
                             activeCategory = cat;
-                            rebuildWidgets();
+                            rebuildAll();
                         }
                     },
                     () -> cat == activeCategory);
@@ -79,7 +79,7 @@ public final class CheatMenuScreen extends CheatBaseScreen {
         }
     }
 
-    private void rebuildWidgets() {
+    private void rebuildAll() {
         this.clearWidgets();
         countedZones.clear();
         buildTabs();
@@ -234,8 +234,8 @@ public final class CheatMenuScreen extends CheatBaseScreen {
 
         // Opacity: [-] N [+] with 5% steps
         int labelW = 90, valW = 44, btnW = 22;
-        addRenderableWidget(CheatWidget.of(x + labelW + valW + 4,           y, btnW, bh, "-", () -> { c.opacity = Math.max(0, c.opacity - 5); c.save(); rebuildWidgets(); }));
-        addRenderableWidget(CheatWidget.of(x + labelW + valW + btnW + 8,    y, btnW, bh, "+", () -> { c.opacity = Math.min(100, c.opacity + 5); c.save(); rebuildWidgets(); }));
+        addRenderableWidget(CheatWidget.of(x + labelW + valW + 4,           y, btnW, bh, "-", () -> { c.opacity = Math.max(0, c.opacity - 5); c.save(); rebuildAll(); }));
+        addRenderableWidget(CheatWidget.of(x + labelW + valW + btnW + 8,    y, btnW, bh, "+", () -> { c.opacity = Math.min(100, c.opacity + 5); c.save(); rebuildAll(); }));
 
         // Accent color presets
         y += bh + gap;
@@ -243,16 +243,16 @@ public final class CheatMenuScreen extends CheatBaseScreen {
         int pW = (rowW - (presets.length - 1) * 3) / presets.length;
         for (int i = 0; i < presets.length; i++) {
             final String hex = presets[i][1];
-            addRenderableWidget(CheatWidget.of(x + i * (pW + 3), y + bh + 2, pW, bh, presets[i][0], () -> { c.accent = hex; c.save(); rebuildWidgets(); }));
+            addRenderableWidget(CheatWidget.of(x + i * (pW + 3), y + bh + 2, pW, bh, presets[i][0], () -> { c.accent = hex; c.save(); rebuildAll(); }));
         }
 
         // Click sound + Reset
         y += 3 * bh + 12;
-        addRenderableWidget(CheatWidget.toggle(x, y, rowW / 2 - 4, bh, "Click Sound", () -> { c.clickSound = !c.clickSound; c.save(); rebuildWidgets(); }, () -> c.clickSound));
+        addRenderableWidget(CheatWidget.toggle(x, y, rowW / 2 - 4, bh, "Click Sound", () -> { c.clickSound = !c.clickSound; c.save(); rebuildAll(); }, () -> c.clickSound));
         addRenderableWidget(CheatWidget.of(x + rowW / 2 + 4, y, rowW / 2 - 4, bh, "Reset Position", () -> {
             c.panelX = -1; c.panelY = -1; c.save();
             this.panelOriginX = Integer.MIN_VALUE; this.panelOriginY = Integer.MIN_VALUE;
-            rebuildWidgets();
+            rebuildAll();
         }));
     }
 

@@ -44,7 +44,7 @@ public final class PlayerPickerScreen extends CheatBaseScreen {
         List<String> names = new ArrayList<>();
         var conn = Minecraft.getInstance().getConnection();
         if (conn != null) {
-            for (var pi : conn.getListedOnlinePlayers()) names.add(pi.getProfile().getName());
+            for (var pi : conn.getListedOnlinePlayers()) names.add(pi.getProfile().name());
         }
         names.sort(Comparator.naturalOrder());
         if (includeSelfOption) names.add(0, "[SERVER]");

@@ -60,7 +60,7 @@ public final class ServerInfoScreen extends CheatBaseScreen {
         return String.valueOf(net.minecraft.SharedConstants.getProtocolVersion());
     }
     private static String worldName(Minecraft mc) {
-        return mc.level == null ? "?" : mc.level.dimension().location().toString();
+        return mc.level == null ? "?" : mc.level.dimension().identifier().toString();
     }
     private static String gm(Minecraft mc) {
         var pgm = mc.getConnection() == null ? null : mc.getConnection().getPlayerInfo(mc.player == null ? null : mc.player.getUUID());
