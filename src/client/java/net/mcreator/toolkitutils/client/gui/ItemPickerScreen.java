@@ -7,8 +7,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public final class ItemPickerScreen extends Screen {
@@ -18,11 +21,31 @@ public final class ItemPickerScreen extends Screen {
     private int scroll = 0;
     private static final int ROWS = 10;
     private static final int PAGE = ROWS;
-    private String lastQuery = "";
+
+    // Cached: (display name lowercased, id string, item) sorted by display name.
+    private record Entry(String nameLower, String id, String display) {}
+    private static List<Entry> ALL_ITEMS;
 
     public ItemPickerScreen() { super(Component.literal("")); }
 
     @Override public boolean isPauseScreen() { return false; }
+
+    private static List<Entry> allItems() {
+        if (ALL_ITEMS == null) {
+            List<Entry> list = new ArrayList<>();
+            for (Item item : BuiltInRegistries.ITEM) {
+                Identifier id = BuiltInRegistries.ITEM.getKey(item);
+                if (id == null) continue;
+                String display;
+                try { display = new ItemStack(item).getHoverName().getString(); }
+                catch (Exception e) { display = id.getPath(); }
+                list.add(new Entry(display.toLowerCase(), id.toString(), display));
+            }
+            list.sort(Comparator.comparing(Entry::nameLower));
+            ALL_ITEMS = list;
+        }
+        return ALL_ITEMS;
+    }
 
     @Override
     protected void init() {
@@ -65,25 +88,23 @@ public final class ItemPickerScreen extends Screen {
         int x = (width - w) / 2;
         int y0 = 20 + bh + gap;
 
-        List<Identifier> matches = new ArrayList<>();
-        for (Identifier id : BuiltInRegistries.ITEM.keySet()) {
-            String s = id.toString();
-            if (q.isEmpty() || s.contains(q) || id.getPath().contains(q)) matches.add(id);
+        List<Entry> matches = new ArrayList<>();
+        for (Entry e : allItems()) {
+            if (q.isEmpty() || e.nameLower.contains(q) || e.id.contains(q)) matches.add(e);
             if (matches.size() > scroll + PAGE) break;
         }
         if (scroll >= matches.size()) scroll = Math.max(0, matches.size() - PAGE);
         int end = Math.min(matches.size(), scroll + PAGE);
         for (int i = scroll; i < end; i++) {
-            Identifier id = matches.get(i);
+            Entry e = matches.get(i);
             int row = i - scroll;
             int by = y0 + row * (bh + gap);
-            Button b = Button.builder(Component.literal(id.toString()),
-                    btn -> ToolkitProcedures.giveById(id.toString(), parseAmount()))
+            Button b = Button.builder(Component.literal(e.display),
+                    btn -> ToolkitProcedures.giveById(e.id, parseAmount()))
                     .bounds(x, by, w, bh).build();
             resultButtons.add(b);
             addRenderableWidget(b);
         }
-        lastQuery = q;
     }
 
     private int parseAmount() {
