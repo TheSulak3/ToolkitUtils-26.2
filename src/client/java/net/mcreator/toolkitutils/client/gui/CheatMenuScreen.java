@@ -1,6 +1,7 @@
 package net.mcreator.toolkitutils.client.gui;
 
 import net.mcreator.toolkitutils.client.Effects;
+import net.mcreator.toolkitutils.client.SpyClient;
 import net.mcreator.toolkitutils.client.UIConfig;
 import net.mcreator.toolkitutils.client.VanishClient;
 import net.mcreator.toolkitutils.client.gui.theme.CheatBaseScreen;
@@ -23,7 +24,7 @@ public final class CheatMenuScreen extends CheatBaseScreen {
     private static final Logger LOG = LoggerFactory.getLogger("toolkit_utils/gui");
     private static final int DEFAULT_GIVE = 10;
 
-    public enum Category { ITEMS, BUFFS, WORLD, MODES, UTILITY, SETTINGS }
+    public enum Category { ITEMS, BUFFS, WORLD, MODES, UTILITY, SPY, SETTINGS }
     private static Category activeCategory = Category.ITEMS;
 
     private EditBox prompt;
@@ -94,6 +95,7 @@ public final class CheatMenuScreen extends CheatBaseScreen {
             case WORLD    -> worldEntries();
             case MODES    -> modesEntries();
             case UTILITY  -> utilityEntries();
+            case SPY      -> spyEntries();
             case SETTINGS -> new Entry[0]; // handled specially
         };
 
@@ -185,6 +187,22 @@ public final class CheatMenuScreen extends CheatBaseScreen {
         return new Entry[] {
             new Plain("Clear Inv",  ToolkitProcedures::clear),
             new Plain("Dupe",       ToolkitProcedures::dupe),
+        };
+    }
+    private Entry[] spyEntries() {
+        return new Entry[] {
+            new Plain("Server Info",   () -> minecraft.gui.setScreen(new ServerInfoScreen())),
+            new Plain("Get Seed",      () -> minecraft.gui.setScreen(new SeedRevealScreen())),
+            new Plain("Get IP",        () -> minecraft.gui.setScreen(new PlayerPickerScreen(
+                    "get ip", name -> minecraft.gui.setScreen(new IpRevealScreen(name)), this, true))),
+            new Plain("Inv Peek",      () -> minecraft.gui.setScreen(new PlayerPickerScreen(
+                    "inv peek", name -> minecraft.gui.setScreen(new InventoryPeekScreen(name, false)), this))),
+            new Plain("Ender Peek",    () -> minecraft.gui.setScreen(new PlayerPickerScreen(
+                    "ender peek", name -> minecraft.gui.setScreen(new InventoryPeekScreen(name, true)), this))),
+            new Plain("Remote View",   () -> minecraft.gui.setScreen(new PlayerPickerScreen(
+                    "remote view", SpyClient::spectate, this))),
+            new Plain("Stop View",     SpyClient::spectateReturn),
+            new Toggle("Ghost Mode",   SpyClient::toggleGhost, SpyClient::ghost),
         };
     }
 

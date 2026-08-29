@@ -16,6 +16,7 @@ public final class ClientInit implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOG.debug("client init");
+        SpyClient.registerReceivers();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
