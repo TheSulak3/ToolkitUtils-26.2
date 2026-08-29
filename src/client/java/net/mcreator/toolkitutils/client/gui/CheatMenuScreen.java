@@ -5,6 +5,7 @@ import net.mcreator.toolkitutils.procedures.ToolkitProcedures;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,8 +85,8 @@ public final class CheatMenuScreen extends Screen {
             // row 7
             new Plain("Clear Inv",  ToolkitProcedures::clear),
             new Plain("Vanish",     VanishClient::toggle),
-            new Plain("Items…",     () -> minecraft.setScreen(new ItemPickerScreen())),
-            new Plain("Tools…",     () -> minecraft.setScreen(new ToolsScreen())),
+            new Plain("Items…",     () -> minecraft.gui.setScreen(new ItemPickerScreen())),
+            new Plain("Tools…",     () -> minecraft.gui.setScreen(new ToolsScreen())),
             new Plain("",           () -> {})
         };
 
@@ -133,17 +134,17 @@ public final class CheatMenuScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 2) { // middle click
-            int mx = (int) mouseX, my = (int) mouseY;
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 2) { // middle click
+            int mx = (int) event.x(), my = (int) event.y();
             for (CountedZone z : countedZones) {
                 if (mx >= z.x && mx < z.x + z.w && my >= z.y && my < z.y + z.h) {
                     LOG.debug("middle-click on {}, opening count prompt", z.label);
-                    minecraft.setScreen(new CountPromptScreen(z.label, z.giver::accept, this));
+                    minecraft.gui.setScreen(new CountPromptScreen(z.label, z.giver::accept, this));
                     return true;
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 }

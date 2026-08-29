@@ -76,7 +76,7 @@ public final class ToolsScreen extends Screen {
         }
 
         addRenderableWidget(Button.builder(Component.literal("Back"),
-                b -> minecraft.setScreen(new CheatMenuScreen()))
+                b -> minecraft.gui.setScreen(new CheatMenuScreen()))
                 .bounds(x0, y0 + rows * (bh + gap) + 6, gridW, bh).build());
     }
 }

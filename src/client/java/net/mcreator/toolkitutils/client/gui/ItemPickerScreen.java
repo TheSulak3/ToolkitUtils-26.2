@@ -38,11 +38,10 @@ public final class ItemPickerScreen extends Screen {
         amount = new EditBox(font, x + w - 58, y, 58, bh, Component.literal("count"));
         amount.setHint(Component.literal("64"));
         amount.setValue("64");
-        amount.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
         addRenderableWidget(amount);
 
         addRenderableWidget(Button.builder(Component.literal("Back"),
-                b -> minecraft.setScreen(new CheatMenuScreen()))
+                b -> minecraft.gui.setScreen(new CheatMenuScreen()))
                 .bounds(x, y + (ROWS + 1) * (bh + gap) + 4, 60, bh).build());
 
         addRenderableWidget(Button.builder(Component.literal("Prev"),

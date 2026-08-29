@@ -37,7 +37,7 @@ public final class LoginScreen extends Screen {
     private void check() {
         if (ToolkitConfig.get().matches(idBox.getValue(), codeBox.getValue())) {
             ClientInit.AUTHENTICATED = true;
-            minecraft.setScreen(new CheatMenuScreen());
+            minecraft.gui.setScreen(new CheatMenuScreen());
         } else {
             codeBox.setValue("");
         }

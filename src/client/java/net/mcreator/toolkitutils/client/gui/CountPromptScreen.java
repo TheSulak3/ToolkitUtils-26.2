@@ -30,7 +30,6 @@ public final class CountPromptScreen extends Screen {
         items = new EditBox(font, x + w - fw, y + bh + gap, fw, bh, Component.literal("items"));
         items.setHint(Component.literal("64"));
         items.setValue("64");
-        items.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
         addRenderableWidget(items);
         addRenderableWidget(Button.builder(Component.literal("Give items"),
                 b -> submit(parse(items.getValue(), 64)))
@@ -39,14 +38,13 @@ public final class CountPromptScreen extends Screen {
         stacks = new EditBox(font, x + w - fw, y + 3 * (bh + gap), fw, bh, Component.literal("stacks"));
         stacks.setHint(Component.literal("1"));
         stacks.setValue("1");
-        stacks.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
         addRenderableWidget(stacks);
         addRenderableWidget(Button.builder(Component.literal("Give stacks (x64)"),
                 b -> submit(parse(stacks.getValue(), 1) * 64))
                 .bounds(x, y + 4 * (bh + gap), w, bh).build());
 
         addRenderableWidget(Button.builder(Component.literal("Cancel"),
-                b -> minecraft.setScreen(returnTo))
+                b -> minecraft.gui.setScreen(returnTo))
                 .bounds(x, y + 5 * (bh + gap) + 6, w, bh).build());
 
         setInitialFocus(items);
@@ -59,6 +57,6 @@ public final class CountPromptScreen extends Screen {
 
     private void submit(int count) {
         onSubmit.accept(count);
-        minecraft.setScreen(returnTo);
+        minecraft.gui.setScreen(returnTo);
     }
 }
