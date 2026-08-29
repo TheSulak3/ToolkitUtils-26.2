@@ -83,6 +83,9 @@ Three JSON files, all auto-created with `CHANGE_ME` defaults on first load if mi
 Only UUIDs listed here can trigger server-side actions. Dashes optional, case-insensitive.
 Any packet from an unlisted UUID is silently dropped with a `[verify] whitelist miss` warn line.
 
+Your Minecraft UUID is looked up per account — find it via any Mojang UUID service or the server's
+`usercache.json` after you've joined once.
+
 ### Client: `config/mod_verify-client.json`
 
 ```json
