@@ -23,10 +23,6 @@ public final class UIConfig {
     // -1 = auto-center; otherwise remembered panel top-left
     public int panelX      = -1;
     public int panelY      = -1;
-    // hud watermark
-    public boolean hudEnabled       = true;
-    public String  hudAnchor        = "top_left";   // top_left | top_right | bottom_left | bottom_right
-    public boolean hudShowActive    = true;         // list active toggles under watermark
     // click sfx
     public boolean clickSound       = true;
 

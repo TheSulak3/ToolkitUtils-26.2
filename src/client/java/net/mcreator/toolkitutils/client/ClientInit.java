@@ -2,11 +2,8 @@ package net.mcreator.toolkitutils.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.mcreator.toolkitutils.client.gui.CheatMenuScreen;
 import net.mcreator.toolkitutils.client.gui.LoginScreen;
-import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +16,6 @@ public final class ClientInit implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOG.debug("client init");
-
-        // HUD watermark, drawn above the vanilla misc overlays
-        HudElementRegistry.attachElementBefore(
-                VanillaHudElements.CHAT,
-                Identifier.fromNamespaceAndPath("toolkit_utils", "hud"),
-                new ToolkitHud());
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;

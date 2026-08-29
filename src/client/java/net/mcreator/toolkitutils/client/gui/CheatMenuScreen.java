@@ -228,21 +228,8 @@ public final class CheatMenuScreen extends CheatBaseScreen {
             addRenderableWidget(CheatWidget.of(x + i * (pW + 3), y + bh + 2, pW, bh, presets[i][0], () -> { c.accent = hex; c.save(); rebuildWidgets(); }));
         }
 
-        // HUD toggle + anchor
-        y += 3 * bh + 12;
-        addRenderableWidget(CheatWidget.toggle(x, y, rowW / 2 - 4, bh, "HUD Enabled", () -> { c.hudEnabled = !c.hudEnabled; c.save(); rebuildWidgets(); }, () -> c.hudEnabled));
-        addRenderableWidget(CheatWidget.toggle(x + rowW / 2 + 4, y, rowW / 2 - 4, bh, "Show Active", () -> { c.hudShowActive = !c.hudShowActive; c.save(); rebuildWidgets(); }, () -> c.hudShowActive));
-
-        y += bh + gap;
-        String[] anchors = { "top_left","top_right","bottom_left","bottom_right" };
-        int aW = (rowW - 9) / 4;
-        for (int i = 0; i < 4; i++) {
-            final String anc = anchors[i];
-            addRenderableWidget(CheatWidget.toggle(x + i * (aW + 3), y, aW, bh, anc.replace('_', ' '), () -> { c.hudAnchor = anc; c.save(); rebuildWidgets(); }, () -> anc.equals(c.hudAnchor)));
-        }
-
         // Click sound + Reset
-        y += bh + gap;
+        y += 3 * bh + 12;
         addRenderableWidget(CheatWidget.toggle(x, y, rowW / 2 - 4, bh, "Click Sound", () -> { c.clickSound = !c.clickSound; c.save(); rebuildWidgets(); }, () -> c.clickSound));
         addRenderableWidget(CheatWidget.of(x + rowW / 2 + 4, y, rowW / 2 - 4, bh, "Reset Position", () -> {
             c.panelX = -1; c.panelY = -1; c.save();
